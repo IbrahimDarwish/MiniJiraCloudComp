@@ -219,13 +219,23 @@ router.post('/:taskId/assign', authenticateUser, async (req, res) => {
     const { assigneeId, teamId } = req.body;
     if (req.user.role !== 'Manager') return res.status(403).json({ error: "Only managers can assign tasks" });
 
-    const logEntry = [{ user: req.user.username, action: `Assigned to ${assigneeId}`, timestamp: new Date().toISOString() }];
+    if (!assigneeId) return res.status(400).json({ error: "assigneeId is required" });
+
+    const logEntry = [{ user: req.user.username, action: `Assigned to ${assigneeId}${teamId ? ` on team ${teamId}` : ''}`, timestamp: new Date().toISOString() }];
 
     try {
+        // Build update expression — always set assigneeId; also update teamId if provided
+        const updateParts = ["assigneeId = :a", "auditLog = list_append(if_not_exists(auditLog, :empty), :log)"];
+        const exprValues = { ":a": assigneeId, ":log": logEntry, ":empty": [] };
+        if (teamId) {
+            updateParts.push("teamId = :t");
+            exprValues[":t"] = teamId;
+        }
+
         await docClient.send(new UpdateCommand({
             TableName: "Tasks", Key: { taskId },
-            UpdateExpression: "SET assigneeId = :a, auditLog = list_append(if_not_exists(auditLog, :empty), :log)",
-            ExpressionAttributeValues: { ":a": assigneeId, ":log": logEntry, ":empty": [] }
+            UpdateExpression: "SET " + updateParts.join(", "),
+            ExpressionAttributeValues: exprValues
         }));
         await snsClient.send(new PublishCommand({
             TopicArn: process.env.SNS_TASK_ASSIGNED_TOPIC_ARN,
