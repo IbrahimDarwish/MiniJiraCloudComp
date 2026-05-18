@@ -2,6 +2,13 @@ const COGNITO_URL = 'https://cognito-idp.us-east-1.amazonaws.com/';
 const CLIENT_ID = process.env.NEXT_PUBLIC_COGNITO_CLIENT_ID;
 
 export const loginUser = async (email, password) => {
+  if (!CLIENT_ID) {
+    return {
+      success: false,
+      error: 'Missing Cognito client ID. Set NEXT_PUBLIC_COGNITO_CLIENT_ID in frontend/.env.local.',
+    };
+  }
+
   const response = await fetch(COGNITO_URL, {
     method: 'POST',
     headers: {

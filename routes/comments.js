@@ -21,15 +21,28 @@ router.get('/:taskId', authenticateUser, async (req, res) => {
         if (!task) return res.status(404).json({ error: "Task not found" });
         if (req.user.role !== 'Manager' && req.user.teamId !== task.teamId) return res.status(403).json({ error: "Access denied" });
 
-        const response = await docClient.send(new QueryCommand({
-            TableName: TABLE_NAME,
-            IndexName: "taskId-index", // Ensure this GSI exists in AWS
-            KeyConditionExpression: "taskId = :tid",
-            ExpressionAttributeValues: { ":tid": taskId }
-        }));
+        let response;
+        try {
+            response = await docClient.send(new QueryCommand({
+                TableName: TABLE_NAME,
+                IndexName: "taskId-index", // Ensure this GSI exists in AWS
+                KeyConditionExpression: "taskId = :tid",
+                ExpressionAttributeValues: { ":tid": taskId }
+            }));
+        } catch (queryErr) {
+            console.warn('GET /api/comments query failed, falling back to scan', { taskId, err: queryErr.message });
+            try {
+                const scanResp = await docClient.send(new ScanCommand({ TableName: TABLE_NAME }));
+                const items = (scanResp.Items || []).filter(i => i.taskId === taskId);
+                response = { Items: items };
+            } catch (scanErr) {
+                console.error('GET /api/comments scan fallback failed', scanErr);
+                return res.status(500).json({ error: "Failed to fetch comments" });
+            }
+        }
 
         // Sort comments by timestamp
-        const sortedComments = response.Items.sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt));
+        const sortedComments = (response.Items || []).sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt));
         res.json(sortedComments);
     } catch (error) {
         res.status(500).json({ error: "Failed to fetch comments" });

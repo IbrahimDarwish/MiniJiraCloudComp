@@ -1,6 +1,7 @@
 'use client';
 import { useState, useEffect } from 'react';
 import { createTask, getTeams, getUsers } from '../utils/api';
+import { getCurrentUser } from '../utils/auth';
 import toast from 'react-hot-toast';
 
 export default function CreateTaskModal({ onClose, onCreated }) {
@@ -15,10 +16,26 @@ export default function CreateTaskModal({ onClose, onCreated }) {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const [teamsRes, usersRes] = await Promise.all([getTeams(), getUsers()]);
-        setTeams(teamsRes.data);
-        setUsers(usersRes.data);
-      } catch (err) { toast.error('Failed to load form data'); }
+        const currentUser = getCurrentUser();
+        const requests = [getTeams()];
+
+        if (currentUser?.role === 'Manager' || currentUser?.role === 'Admin') {
+          requests.push(getUsers());
+        }
+
+        const [teamsResult, usersResult] = await Promise.allSettled(requests);
+
+        if (teamsResult.status === 'fulfilled') {
+          setTeams(teamsResult.value.data);
+        } else {
+          toast.error('Failed to load form data');
+          return;
+        }
+
+        if (usersResult && usersResult.status === 'fulfilled') {
+          setUsers(usersResult.value.data);
+        }
+      } catch { toast.error('Failed to load form data'); }
     };
     fetchData();
   }, []);
@@ -41,7 +58,7 @@ export default function CreateTaskModal({ onClose, onCreated }) {
       const res = await createTask(formData);
       onCreated(res.data);
       toast.success('Task created!');
-    } catch (err) { toast.error('Failed to create task'); }
+    } catch { toast.error('Failed to create task'); }
     finally { setLoading(false); }
   };
 

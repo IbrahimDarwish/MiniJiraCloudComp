@@ -1,0 +1,505 @@
+
+> minijira-backend@1.0.0 start
+> node server.js
+
+◇ injected env (7) from .env // tip: ⌘ enable debugging { debug: true }
+MiniJira API running on port 80
+authenticateUser: GetUser attributes [
+  { Name: 'email', Value: 'ali@demo.com' },
+  { Name: 'custom:role', Value: 'Manager' },
+  { Name: 'sub', Value: '149804f8-f051-7020-6414-39958e149426' }
+]
+authenticateUser: GetUser attributes [
+  { Name: 'email', Value: 'ali@demo.com' },
+  { Name: 'custom:role', Value: 'Manager' },
+  { Name: 'sub', Value: '149804f8-f051-7020-6414-39958e149426' }
+]
+authenticateUser: mapped Cognito token to Users by email {
+  username: '149804f8-f051-7020-6414-39958e149426',
+  email: 'ali@demo.com',
+  userId: 'ali@demo.com',
+  teamId: ''
+}
+authenticateUser: mapped Cognito token to Users by email {
+  username: '149804f8-f051-7020-6414-39958e149426',
+  email: 'ali@demo.com',
+  userId: 'ali@demo.com',
+  teamId: ''
+}
+authenticateUser: GetUser attributes [
+  { Name: 'email', Value: 'ali@demo.com' },
+  { Name: 'custom:role', Value: 'Manager' },
+  { Name: 'sub', Value: '149804f8-f051-7020-6414-39958e149426' }
+]
+authenticateUser: GetUser attributes [
+  { Name: 'email', Value: 'ali@demo.com' },
+  { Name: 'custom:role', Value: 'Manager' },
+  { Name: 'sub', Value: '149804f8-f051-7020-6414-39958e149426' }
+]
+authenticateUser: mapped Cognito token to Users by email {
+  username: '149804f8-f051-7020-6414-39958e149426',
+  email: 'ali@demo.com',
+  userId: 'ali@demo.com',
+  teamId: ''
+}
+authenticateUser: mapped Cognito token to Users by email {
+  username: '149804f8-f051-7020-6414-39958e149426',
+  email: 'ali@demo.com',
+  userId: 'ali@demo.com',
+  teamId: ''
+}
+authenticateUser: GetUser attributes [
+  { Name: 'email', Value: 'ali@demo.com' },
+  { Name: 'custom:role', Value: 'Manager' },
+  { Name: 'sub', Value: '149804f8-f051-7020-6414-39958e149426' }
+]
+authenticateUser: GetUser attributes [
+  { Name: 'email', Value: 'ali@demo.com' },
+  { Name: 'custom:role', Value: 'Manager' },
+  { Name: 'sub', Value: '149804f8-f051-7020-6414-39958e149426' }
+]
+authenticateUser: mapped Cognito token to Users by email {
+  username: '149804f8-f051-7020-6414-39958e149426',
+  email: 'ali@demo.com',
+  userId: 'ali@demo.com',
+  teamId: ''
+}
+authenticateUser: mapped Cognito token to Users by email {
+  username: '149804f8-f051-7020-6414-39958e149426',
+  email: 'ali@demo.com',
+  userId: 'ali@demo.com',
+  teamId: ''
+}
+GET /api/comments query failed, falling back to scan {
+  taskId: '14929bb8-cd62-4f3b-a4b7-84853a7c6868',
+  err: 'Query condition missed key schema element: taskID'
+}
+GET /api/comments query failed, falling back to scan {
+  taskId: '14929bb8-cd62-4f3b-a4b7-84853a7c6868',
+  err: 'Query condition missed key schema element: taskID'
+}
+authenticateUser: GetUser attributes [
+  { Name: 'email', Value: 'ali@demo.com' },
+  { Name: 'custom:role', Value: 'Manager' },
+  { Name: 'sub', Value: '149804f8-f051-7020-6414-39958e149426' }
+]
+authenticateUser: GetUser attributes [
+  { Name: 'email', Value: 'ali@demo.com' },
+  { Name: 'custom:role', Value: 'Manager' },
+  { Name: 'sub', Value: '149804f8-f051-7020-6414-39958e149426' }
+]
+authenticateUser: mapped Cognito token to Users by email {
+  username: '149804f8-f051-7020-6414-39958e149426',
+  email: 'ali@demo.com',
+  userId: 'ali@demo.com',
+  teamId: ''
+}
+authenticateUser: mapped Cognito token to Users by email {
+  username: '149804f8-f051-7020-6414-39958e149426',
+  email: 'ali@demo.com',
+  userId: 'ali@demo.com',
+  teamId: ''
+}
+authenticateUser: GetUser attributes [
+  { Name: 'email', Value: 'ali@demo.com' },
+  { Name: 'custom:role', Value: 'Manager' },
+  { Name: 'sub', Value: '149804f8-f051-7020-6414-39958e149426' }
+]
+authenticateUser: GetUser attributes [
+  { Name: 'email', Value: 'ali@demo.com' },
+  { Name: 'custom:role', Value: 'Manager' },
+  { Name: 'sub', Value: '149804f8-f051-7020-6414-39958e149426' }
+]
+authenticateUser: mapped Cognito token to Users by email {
+  username: '149804f8-f051-7020-6414-39958e149426',
+  email: 'ali@demo.com',
+  userId: 'ali@demo.com',
+  teamId: ''
+}
+authenticateUser: mapped Cognito token to Users by email {
+  username: '149804f8-f051-7020-6414-39958e149426',
+  email: 'ali@demo.com',
+  userId: 'ali@demo.com',
+  teamId: ''
+}
+authenticateUser: GetUser attributes [
+  { Name: 'email', Value: 'ali@demo.com' },
+  { Name: 'custom:role', Value: 'Manager' },
+  { Name: 'sub', Value: '149804f8-f051-7020-6414-39958e149426' }
+]
+authenticateUser: GetUser attributes [
+  { Name: 'email', Value: 'ali@demo.com' },
+  { Name: 'custom:role', Value: 'Manager' },
+  { Name: 'sub', Value: '149804f8-f051-7020-6414-39958e149426' }
+]
+authenticateUser: mapped Cognito token to Users by email {
+  username: '149804f8-f051-7020-6414-39958e149426',
+  email: 'ali@demo.com',
+  userId: 'ali@demo.com',
+  teamId: ''
+}
+authenticateUser: mapped Cognito token to Users by email {
+  username: '149804f8-f051-7020-6414-39958e149426',
+  email: 'ali@demo.com',
+  userId: 'ali@demo.com',
+  teamId: ''
+}
+GET /api/comments query failed, falling back to scan {
+  taskId: '14929bb8-cd62-4f3b-a4b7-84853a7c6868',
+  err: 'Query condition missed key schema element: taskID'
+}
+GET /api/comments query failed, falling back to scan {
+  taskId: '14929bb8-cd62-4f3b-a4b7-84853a7c6868',
+  err: 'Query condition missed key schema element: taskID'
+}
+authenticateUser: GetUser attributes [
+  { Name: 'email', Value: 'ali@demo.com' },
+  { Name: 'custom:role', Value: 'Manager' },
+  { Name: 'sub', Value: '149804f8-f051-7020-6414-39958e149426' }
+]
+authenticateUser: mapped Cognito token to Users by email {
+  username: '149804f8-f051-7020-6414-39958e149426',
+  email: 'ali@demo.com',
+  userId: 'ali@demo.com',
+  teamId: ''
+}
+authenticateUser: GetUser attributes [
+  { Name: 'email', Value: 'sara@demo.com' },
+  { Name: 'custom:teamId', Value: 'frontend' },
+  { Name: 'custom:role', Value: 'Employee' },
+  { Name: 'sub', Value: '04c894f8-7031-70a6-489a-9c8ac7ba73bf' }
+]
+authenticateUser: mapped Cognito token to Users by email {
+  username: '04c894f8-7031-70a6-489a-9c8ac7ba73bf',
+  email: 'sara@demo.com',
+  userId: 'sara@demo.com',
+  teamId: 'frontend'
+}
+authenticateUser: GetUser attributes [
+  { Name: 'email', Value: 'sara@demo.com' },
+  { Name: 'custom:teamId', Value: 'frontend' },
+  { Name: 'custom:role', Value: 'Employee' },
+  { Name: 'sub', Value: '04c894f8-7031-70a6-489a-9c8ac7ba73bf' }
+]
+authenticateUser: GetUser attributes [
+  { Name: 'email', Value: 'sara@demo.com' },
+  { Name: 'custom:teamId', Value: 'frontend' },
+  { Name: 'custom:role', Value: 'Employee' },
+  { Name: 'sub', Value: '04c894f8-7031-70a6-489a-9c8ac7ba73bf' }
+]
+authenticateUser: mapped Cognito token to Users by email {
+  username: '04c894f8-7031-70a6-489a-9c8ac7ba73bf',
+  email: 'sara@demo.com',
+  userId: 'sara@demo.com',
+  teamId: 'frontend'
+}
+authenticateUser: mapped Cognito token to Users by email {
+  username: '04c894f8-7031-70a6-489a-9c8ac7ba73bf',
+  email: 'sara@demo.com',
+  userId: 'sara@demo.com',
+  teamId: 'frontend'
+}
+authenticateUser: GetUser attributes [
+  { Name: 'email', Value: 'sara@demo.com' },
+  { Name: 'custom:teamId', Value: 'frontend' },
+  { Name: 'custom:role', Value: 'Employee' },
+  { Name: 'sub', Value: '04c894f8-7031-70a6-489a-9c8ac7ba73bf' }
+]
+authenticateUser: mapped Cognito token to Users by email {
+  username: '04c894f8-7031-70a6-489a-9c8ac7ba73bf',
+  email: 'sara@demo.com',
+  userId: 'sara@demo.com',
+  teamId: 'frontend'
+}
+GET /api/comments query failed, falling back to scan {
+  taskId: '14929bb8-cd62-4f3b-a4b7-84853a7c6868',
+  err: 'Query condition missed key schema element: taskID'
+}
+authenticateUser: GetUser attributes [
+  { Name: 'email', Value: 'sara@demo.com' },
+  { Name: 'custom:teamId', Value: 'frontend' },
+  { Name: 'custom:role', Value: 'Employee' },
+  { Name: 'sub', Value: '04c894f8-7031-70a6-489a-9c8ac7ba73bf' }
+]
+authenticateUser: mapped Cognito token to Users by email {
+  username: '04c894f8-7031-70a6-489a-9c8ac7ba73bf',
+  email: 'sara@demo.com',
+  userId: 'sara@demo.com',
+  teamId: 'frontend'
+}
+GET /api/comments query failed, falling back to scan {
+  taskId: '14929bb8-cd62-4f3b-a4b7-84853a7c6868',
+  err: 'Query condition missed key schema element: taskID'
+}
+authenticateUser: GetUser attributes [
+  { Name: 'email', Value: 'omar@demo.com' },
+  { Name: 'custom:teamId', Value: 'backend' },
+  { Name: 'custom:role', Value: 'Employee' },
+  { Name: 'sub', Value: '048824b8-5001-70c9-44a2-2ae2b1402c4c' }
+]
+authenticateUser: mapped Cognito token to Users by email {
+  username: '048824b8-5001-70c9-44a2-2ae2b1402c4c',
+  email: 'omar@demo.com',
+  userId: 'omar@demo.com',
+  teamId: 'backend'
+}
+authenticateUser: GetUser attributes [
+  { Name: 'email', Value: 'sara@demo.com' },
+  { Name: 'custom:teamId', Value: 'frontend' },
+  { Name: 'custom:role', Value: 'Employee' },
+  { Name: 'sub', Value: '04c894f8-7031-70a6-489a-9c8ac7ba73bf' }
+]
+authenticateUser: mapped Cognito token to Users by email {
+  username: '04c894f8-7031-70a6-489a-9c8ac7ba73bf',
+  email: 'sara@demo.com',
+  userId: 'sara@demo.com',
+  teamId: 'frontend'
+}
+authenticateUser: GetUser attributes [
+  { Name: 'email', Value: 'sara@demo.com' },
+  { Name: 'custom:teamId', Value: 'frontend' },
+  { Name: 'custom:role', Value: 'Employee' },
+  { Name: 'sub', Value: '04c894f8-7031-70a6-489a-9c8ac7ba73bf' }
+]
+authenticateUser: mapped Cognito token to Users by email {
+  username: '04c894f8-7031-70a6-489a-9c8ac7ba73bf',
+  email: 'sara@demo.com',
+  userId: 'sara@demo.com',
+  teamId: 'frontend'
+}
+authenticateUser: GetUser attributes [
+  { Name: 'email', Value: 'sara@demo.com' },
+  { Name: 'custom:teamId', Value: 'frontend' },
+  { Name: 'custom:role', Value: 'Employee' },
+  { Name: 'sub', Value: '04c894f8-7031-70a6-489a-9c8ac7ba73bf' }
+]
+authenticateUser: GetUser attributes [
+  { Name: 'email', Value: 'sara@demo.com' },
+  { Name: 'custom:teamId', Value: 'frontend' },
+  { Name: 'custom:role', Value: 'Employee' },
+  { Name: 'sub', Value: '04c894f8-7031-70a6-489a-9c8ac7ba73bf' }
+]
+authenticateUser: mapped Cognito token to Users by email {
+  username: '04c894f8-7031-70a6-489a-9c8ac7ba73bf',
+  email: 'sara@demo.com',
+  userId: 'sara@demo.com',
+  teamId: 'frontend'
+}
+authenticateUser: mapped Cognito token to Users by email {
+  username: '04c894f8-7031-70a6-489a-9c8ac7ba73bf',
+  email: 'sara@demo.com',
+  userId: 'sara@demo.com',
+  teamId: 'frontend'
+}
+GET /api/comments query failed, falling back to scan {
+  taskId: '14929bb8-cd62-4f3b-a4b7-84853a7c6868',
+  err: 'Query condition missed key schema element: taskID'
+}
+authenticateUser: GetUser attributes [
+  { Name: 'email', Value: 'sara@demo.com' },
+  { Name: 'custom:teamId', Value: 'frontend' },
+  { Name: 'custom:role', Value: 'Employee' },
+  { Name: 'sub', Value: '04c894f8-7031-70a6-489a-9c8ac7ba73bf' }
+]
+authenticateUser: mapped Cognito token to Users by email {
+  username: '04c894f8-7031-70a6-489a-9c8ac7ba73bf',
+  email: 'sara@demo.com',
+  userId: 'sara@demo.com',
+  teamId: 'frontend'
+}
+GET /api/comments query failed, falling back to scan {
+  taskId: '14929bb8-cd62-4f3b-a4b7-84853a7c6868',
+  err: 'Query condition missed key schema element: taskID'
+}
+authenticateUser: GetUser attributes [
+  { Name: 'email', Value: 'ali@demo.com' },
+  { Name: 'custom:role', Value: 'Manager' },
+  { Name: 'sub', Value: '149804f8-f051-7020-6414-39958e149426' }
+]
+authenticateUser: GetUser attributes [
+  { Name: 'email', Value: 'ali@demo.com' },
+  { Name: 'custom:role', Value: 'Manager' },
+  { Name: 'sub', Value: '149804f8-f051-7020-6414-39958e149426' }
+]
+authenticateUser: mapped Cognito token to Users by email {
+  username: '149804f8-f051-7020-6414-39958e149426',
+  email: 'ali@demo.com',
+  userId: 'ali@demo.com',
+  teamId: ''
+}
+authenticateUser: mapped Cognito token to Users by email {
+  username: '149804f8-f051-7020-6414-39958e149426',
+  email: 'ali@demo.com',
+  userId: 'ali@demo.com',
+  teamId: ''
+}
+authenticateUser: GetUser attributes [
+  { Name: 'email', Value: 'ali@demo.com' },
+  { Name: 'custom:role', Value: 'Manager' },
+  { Name: 'sub', Value: '149804f8-f051-7020-6414-39958e149426' }
+]
+authenticateUser: mapped Cognito token to Users by email {
+  username: '149804f8-f051-7020-6414-39958e149426',
+  email: 'ali@demo.com',
+  userId: 'ali@demo.com',
+  teamId: ''
+}
+authenticateUser: GetUser attributes [
+  { Name: 'email', Value: 'ali@demo.com' },
+  { Name: 'custom:role', Value: 'Manager' },
+  { Name: 'sub', Value: '149804f8-f051-7020-6414-39958e149426' }
+]
+authenticateUser: GetUser attributes [
+  { Name: 'email', Value: 'ali@demo.com' },
+  { Name: 'custom:role', Value: 'Manager' },
+  { Name: 'sub', Value: '149804f8-f051-7020-6414-39958e149426' }
+]
+authenticateUser: mapped Cognito token to Users by email {
+  username: '149804f8-f051-7020-6414-39958e149426',
+  email: 'ali@demo.com',
+  userId: 'ali@demo.com',
+  teamId: ''
+}
+authenticateUser: mapped Cognito token to Users by email {
+  username: '149804f8-f051-7020-6414-39958e149426',
+  email: 'ali@demo.com',
+  userId: 'ali@demo.com',
+  teamId: ''
+}
+GET /api/comments query failed, falling back to scan {
+  taskId: '14929bb8-cd62-4f3b-a4b7-84853a7c6868',
+  err: 'Query condition missed key schema element: taskID'
+}
+authenticateUser: GetUser attributes [
+  { Name: 'email', Value: 'ali@demo.com' },
+  { Name: 'custom:role', Value: 'Manager' },
+  { Name: 'sub', Value: '149804f8-f051-7020-6414-39958e149426' }
+]
+authenticateUser: mapped Cognito token to Users by email {
+  username: '149804f8-f051-7020-6414-39958e149426',
+  email: 'ali@demo.com',
+  userId: 'ali@demo.com',
+  teamId: ''
+}
+GET /api/comments query failed, falling back to scan {
+  taskId: '14929bb8-cd62-4f3b-a4b7-84853a7c6868',
+  err: 'Query condition missed key schema element: taskID'
+}
+authenticateUser: GetUser attributes [
+  { Name: 'email', Value: 'ali@demo.com' },
+  { Name: 'custom:role', Value: 'Manager' },
+  { Name: 'sub', Value: '149804f8-f051-7020-6414-39958e149426' }
+]
+authenticateUser: mapped Cognito token to Users by email {
+  username: '149804f8-f051-7020-6414-39958e149426',
+  email: 'ali@demo.com',
+  userId: 'ali@demo.com',
+  teamId: ''
+}
+authenticateUser: GetUser attributes [
+  { Name: 'email', Value: 'ali@demo.com' },
+  { Name: 'custom:role', Value: 'Manager' },
+  { Name: 'sub', Value: '149804f8-f051-7020-6414-39958e149426' }
+]
+authenticateUser: GetUser attributes [
+  { Name: 'email', Value: 'ali@demo.com' },
+  { Name: 'custom:role', Value: 'Manager' },
+  { Name: 'sub', Value: '149804f8-f051-7020-6414-39958e149426' }
+]
+authenticateUser: mapped Cognito token to Users by email {
+  username: '149804f8-f051-7020-6414-39958e149426',
+  email: 'ali@demo.com',
+  userId: 'ali@demo.com',
+  teamId: ''
+}
+authenticateUser: mapped Cognito token to Users by email {
+  username: '149804f8-f051-7020-6414-39958e149426',
+  email: 'ali@demo.com',
+  userId: 'ali@demo.com',
+  teamId: ''
+}
+authenticateUser: GetUser attributes [
+  { Name: 'email', Value: 'ali@demo.com' },
+  { Name: 'custom:role', Value: 'Manager' },
+  { Name: 'sub', Value: '149804f8-f051-7020-6414-39958e149426' }
+]
+authenticateUser: mapped Cognito token to Users by email {
+  username: '149804f8-f051-7020-6414-39958e149426',
+  email: 'ali@demo.com',
+  userId: 'ali@demo.com',
+  teamId: ''
+}
+authenticateUser: GetUser attributes [
+  { Name: 'email', Value: 'ali@demo.com' },
+  { Name: 'custom:role', Value: 'Manager' },
+  { Name: 'sub', Value: '149804f8-f051-7020-6414-39958e149426' }
+]
+authenticateUser: mapped Cognito token to Users by email {
+  username: '149804f8-f051-7020-6414-39958e149426',
+  email: 'ali@demo.com',
+  userId: 'ali@demo.com',
+  teamId: ''
+}
+authenticateUser: GetUser attributes [
+  { Name: 'email', Value: 'ali@demo.com' },
+  { Name: 'custom:role', Value: 'Manager' },
+  { Name: 'sub', Value: '149804f8-f051-7020-6414-39958e149426' }
+]
+authenticateUser: mapped Cognito token to Users by email {
+  username: '149804f8-f051-7020-6414-39958e149426',
+  email: 'ali@demo.com',
+  userId: 'ali@demo.com',
+  teamId: ''
+}
+authenticateUser: GetUser attributes [
+  { Name: 'email', Value: 'ali@demo.com' },
+  { Name: 'custom:role', Value: 'Manager' },
+  { Name: 'sub', Value: '149804f8-f051-7020-6414-39958e149426' }
+]
+authenticateUser: GetUser attributes [
+  { Name: 'email', Value: 'ali@demo.com' },
+  { Name: 'custom:role', Value: 'Manager' },
+  { Name: 'sub', Value: '149804f8-f051-7020-6414-39958e149426' }
+]
+authenticateUser: mapped Cognito token to Users by email {
+  username: '149804f8-f051-7020-6414-39958e149426',
+  email: 'ali@demo.com',
+  userId: 'ali@demo.com',
+  teamId: ''
+}
+authenticateUser: mapped Cognito token to Users by email {
+  username: '149804f8-f051-7020-6414-39958e149426',
+  email: 'ali@demo.com',
+  userId: 'ali@demo.com',
+  teamId: ''
+}
+authenticateUser: GetUser attributes [
+  { Name: 'email', Value: 'ali@demo.com' },
+  { Name: 'custom:role', Value: 'Manager' },
+  { Name: 'sub', Value: '149804f8-f051-7020-6414-39958e149426' }
+]
+authenticateUser: GetUser attributes [
+  { Name: 'email', Value: 'ali@demo.com' },
+  { Name: 'custom:role', Value: 'Manager' },
+  { Name: 'sub', Value: '149804f8-f051-7020-6414-39958e149426' }
+]
+authenticateUser: mapped Cognito token to Users by email {
+  username: '149804f8-f051-7020-6414-39958e149426',
+  email: 'ali@demo.com',
+  userId: 'ali@demo.com',
+  teamId: ''
+}
+authenticateUser: mapped Cognito token to Users by email {
+  username: '149804f8-f051-7020-6414-39958e149426',
+  email: 'ali@demo.com',
+  userId: 'ali@demo.com',
+  teamId: ''
+}
+GET /api/comments query failed, falling back to scan {
+  taskId: 'ce4c11f3-5e80-4150-ae49-16c7e9870aa0',
+  err: 'Query condition missed key schema element: taskID'
+}
+GET /api/comments query failed, falling back to scan {
+  taskId: 'ce4c11f3-5e80-4150-ae49-16c7e9870aa0',
+  err: 'Query condition missed key schema element: taskID'
+}
