@@ -1,5 +1,6 @@
 'use client';
 import { useState, useEffect } from 'react';
+import Image from 'next/image';
 import { getTask, deleteTask, updateTaskImage } from '../utils/api';
 import { getCurrentUser } from '../utils/auth';
 import Comments from './Comments';
@@ -25,16 +26,27 @@ export default function TaskModal({ taskId, onClose, onDelete }) {
   const [uploadingImage, setUploadingImage] = useState(false);
   const currentUser = getCurrentUser();
 
-  useEffect(() => { fetchTask(); }, [taskId]);
+  useEffect(() => {
+    let active = true;
 
-  const fetchTask = async () => {
-    setLoading(true);
-    try {
-      const res = await getTask(taskId);
-      setTask(res.data);
-    } catch (err) { toast.error('Failed to load task'); }
-    finally { setLoading(false); }
-  };
+    const loadTask = async () => {
+      setLoading(true);
+      try {
+        const res = await getTask(taskId);
+        if (active) setTask(res.data);
+      } catch {
+        if (active) toast.error('Failed to load task');
+      } finally {
+        if (active) setLoading(false);
+      }
+    };
+
+    loadTask();
+
+    return () => {
+      active = false;
+    };
+  }, [taskId]);
 
   const handleDelete = async () => {
     if (!confirm('Delete this task?')) return;
@@ -43,7 +55,7 @@ export default function TaskModal({ taskId, onClose, onDelete }) {
       toast.success('Task deleted');
       onDelete(taskId);
       onClose();
-    } catch (err) { toast.error('Failed to delete task'); }
+    } catch { toast.error('Failed to delete task'); }
   };
 
   const handleImageUpload = async (e) => {
@@ -56,7 +68,7 @@ export default function TaskModal({ taskId, onClose, onDelete }) {
       const res = await updateTaskImage(taskId, formData);
       setTask({ ...task, imageUrl: res.data.imageUrl });
       toast.success('Image updated');
-    } catch (err) { toast.error('Failed to upload image'); }
+    } catch { toast.error('Failed to upload image'); }
     finally { setUploadingImage(false); }
   };
 
@@ -122,7 +134,14 @@ export default function TaskModal({ taskId, onClose, onDelete }) {
           <div className="mb-6">
             <p className="text-xs text-gray-500 mb-2">Image</p>
             {task?.imageUrl ? (
-              <img src={task.imageUrl} alt="Task" className="w-full max-h-48 object-cover rounded-lg border mb-2" />
+              <Image
+                src={task.imageUrl}
+                alt="Task"
+                width={960}
+                height={384}
+                sizes="(max-width: 768px) 100vw, 768px"
+                className="w-full max-h-48 object-cover rounded-lg border mb-2"
+              />
             ) : (
               <p className="text-gray-400 text-sm bg-gray-50 p-3 rounded-lg">No image attached</p>
             )}

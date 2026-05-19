@@ -2,7 +2,7 @@
 const express = require('express');
 const { v4: uuidv4 } = require('uuid');
 const { DynamoDBClient } = require("@aws-sdk/client-dynamodb");
-const { DynamoDBDocumentClient, PutCommand, QueryCommand, GetCommand, DeleteCommand, ScanCommand } = require("@aws-sdk/lib-dynamodb");
+const { DynamoDBDocumentClient, PutCommand, QueryCommand, GetCommand, DeleteCommand, ScanCommand, UpdateCommand } = require("@aws-sdk/lib-dynamodb");
 const { authenticateUser } = require('../middleware/auth');
 
 const router = express.Router();
@@ -73,6 +73,51 @@ router.post('/', authenticateUser, async (req, res) => {
         res.status(201).json(commentItem);
     } catch (error) {
         res.status(500).json({ error: "Failed to add comment" });
+    }
+});
+
+// UPDATE A COMMENT
+router.put('/:commentId', authenticateUser, async (req, res) => {
+    const { commentId } = req.params;
+    const { text } = req.body;
+
+    if (!text || !text.trim()) {
+        return res.status(400).json({ error: "text is required" });
+    }
+
+    try {
+        const getResp = await docClient.send(new GetCommand({ TableName: TABLE_NAME, Key: { commentId } }));
+        const comment = getResp.Item;
+
+        if (!comment) return res.status(404).json({ error: "Comment not found" });
+
+        if (req.user.username !== comment.author && req.user.role !== 'Manager') {
+            return res.status(403).json({ error: "You can only edit your own comments" });
+        }
+
+        const taskResp = await docClient.send(new GetCommand({ TableName: TASKS_TABLE, Key: { taskId: comment.taskId } }));
+        const task = taskResp.Item;
+        if (!task) return res.status(404).json({ error: "Task not found" });
+        if (req.user.role !== 'Manager' && req.user.teamId !== task.teamId) return res.status(403).json({ error: "Access denied" });
+
+        await docClient.send(new UpdateCommand({
+            TableName: TABLE_NAME,
+            Key: { commentId },
+            UpdateExpression: "SET #text = :text, editedAt = :editedAt",
+            ExpressionAttributeNames: { "#text": "text" },
+            ExpressionAttributeValues: {
+                ":text": text.trim(),
+                ":editedAt": new Date().toISOString()
+            }
+        }));
+
+        res.json({
+            ...comment,
+            text: text.trim(),
+            editedAt: new Date().toISOString()
+        });
+    } catch (error) {
+        res.status(500).json({ error: "Failed to update comment" });
     }
 });
 

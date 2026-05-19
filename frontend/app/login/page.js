@@ -25,7 +25,7 @@ export default function LoginPage() {
       } else {
         toast.error(result.error || 'Login failed');
       }
-    } catch (err) {
+    } catch {
       toast.error('Something went wrong');
     } finally {
       setLoading(false);
@@ -33,22 +33,22 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center p-4">
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center p-4 dark:bg-none dark:bg-slate-950">
       <Toaster position="top-right" />
-      <div className="bg-white p-8 rounded-2xl shadow-xl w-full max-w-md">
+      <div className="bg-white p-8 rounded-2xl shadow-xl w-full max-w-md dark:bg-slate-900 dark:shadow-black/30">
         <div className="text-center mb-8">
           <div className="w-16 h-16 bg-blue-500 rounded-2xl flex items-center justify-center mx-auto mb-4">
             <span className="text-white text-2xl font-bold">J</span>
           </div>
-          <h1 className="text-2xl font-bold text-gray-800">Mini-Jira</h1>
-          <p className="text-gray-500 text-sm mt-1">Sign in to your account</p>
+          <h1 className="text-2xl font-bold text-gray-800 dark:text-slate-50">Mini-Jira</h1>
+          <p className="text-gray-500 text-sm mt-1 dark:text-slate-400">Sign in to your account</p>
         </div>
         <div className="space-y-4">
           <div>
-            <label className="text-sm font-medium text-gray-700">Email</label>
+            <label className="text-sm font-medium text-gray-700 dark:text-slate-200">Email</label>
             <input
               type="email"
-              className="w-full border border-gray-300 rounded-lg p-3 mt-1 text-black focus:outline-none focus:ring-2 focus:ring-blue-400"
+              className="w-full border border-gray-300 rounded-lg p-3 mt-1 text-black focus:outline-none focus:ring-2 focus:ring-blue-400 dark:border-slate-700 dark:bg-slate-950 dark:text-slate-50"
               placeholder="ali@demo.com"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
@@ -56,10 +56,10 @@ export default function LoginPage() {
             />
           </div>
           <div>
-            <label className="text-sm font-medium text-gray-700">Password</label>
+            <label className="text-sm font-medium text-gray-700 dark:text-slate-200">Password</label>
             <input
               type="password"
-              className="w-full border border-gray-300 rounded-lg p-3 mt-1 text-black focus:outline-none focus:ring-2 focus:ring-blue-400"
+              className="w-full border border-gray-300 rounded-lg p-3 mt-1 text-black focus:outline-none focus:ring-2 focus:ring-blue-400 dark:border-slate-700 dark:bg-slate-950 dark:text-slate-50"
               placeholder="••••••••"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
@@ -74,11 +74,11 @@ export default function LoginPage() {
             {loading ? 'Signing in...' : 'Sign In'}
           </button>
         </div>
-        <div className="mt-6 p-4 bg-gray-50 rounded-lg">
-          <p className="text-xs text-gray-500 font-medium mb-2">Demo accounts:</p>
-          <p className="text-xs text-gray-400">Manager: ali@demo.com / Demo@1234</p>
-          <p className="text-xs text-gray-400">Employee: sara@demo.com / Demo@1234</p>
-          <p className="text-xs text-gray-400">Employee: omar@demo.com / Demo@1234</p>
+        <div className="mt-6 p-4 bg-gray-50 rounded-lg dark:bg-slate-950">
+          <p className="text-xs text-gray-500 font-medium mb-2 dark:text-slate-400">Demo accounts:</p>
+          <p className="text-xs text-gray-400 dark:text-slate-500">Manager: ali@demo.com / Demo@1234</p>
+          <p className="text-xs text-gray-400 dark:text-slate-500">Employee: sara@demo.com / Demo@1234</p>
+          <p className="text-xs text-gray-400 dark:text-slate-500">Employee: omar@demo.com / Demo@1234</p>
         </div>
       </div>
     </div>

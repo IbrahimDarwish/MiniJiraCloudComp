@@ -2,7 +2,7 @@
 const express = require('express');
 const { v4: uuidv4 } = require('uuid');
 const { DynamoDBClient } = require("@aws-sdk/client-dynamodb");
-const { DynamoDBDocumentClient, PutCommand, ScanCommand, DeleteCommand, UpdateCommand } = require("@aws-sdk/lib-dynamodb");
+const { DynamoDBDocumentClient, PutCommand, ScanCommand, DeleteCommand, UpdateCommand, GetCommand } = require("@aws-sdk/lib-dynamodb");
 const { authenticateUser } = require('../middleware/auth');
 
 const router = express.Router();
@@ -16,6 +16,21 @@ router.get('/', authenticateUser, async (req, res) => {
         res.json(response.Items);
     } catch (error) {
         res.status(500).json({ error: "Failed to fetch projects" });
+    }
+});
+
+// READ SINGLE PROJECT
+router.get('/:projectId', authenticateUser, async (req, res) => {
+    try {
+        const response = await docClient.send(new GetCommand({
+            TableName: TABLE_NAME,
+            Key: { projectId: req.params.projectId }
+        }));
+
+        if (!response.Item) return res.status(404).json({ error: "Project not found" });
+        res.json(response.Item);
+    } catch (error) {
+        res.status(500).json({ error: "Failed to fetch project" });
     }
 });
 

@@ -47,7 +47,16 @@ export const getMe = () => api.get('/api/users/me');
 
 // PROJECTS
 export const getProjects = () => api.get('/api/projects');
+export const getProject = (projectId) => api.get(`/api/projects/${projectId}`);
 export const createProject = (name, description) =>
   api.post('/api/projects', { name, description });
+export const updateProject = (projectId, name, description) =>
+  api.put(`/api/projects/${projectId}`, { name, description });
+export const deleteProject = (projectId) =>
+  api.delete(`/api/projects/${projectId}`);
+
+// COMMENT UPDATE
+export const updateComment = (commentId, text) =>
+  api.put(`/api/comments/${commentId}`, { text });
 
 export default api;

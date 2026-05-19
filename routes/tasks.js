@@ -15,6 +15,8 @@ const s3 = new S3Client({ region: process.env.AWS_REGION });
 const docClient = DynamoDBDocumentClient.from(new DynamoDBClient({ region: process.env.AWS_REGION }));
 const snsClient = new SNSClient({ region: process.env.AWS_REGION });
 
+const getOriginalsBucket = () => (process.env.S3_ORIGINALS_BUCKET || '').trim().replace(/^\[|\]$/g, '');
+
 const isCredentialsError = (error) =>
     error?.name === 'CredentialsProviderError' ||
     /could not load credentials from any providers/i.test(error?.message || '');
@@ -179,10 +181,10 @@ router.post('/', authenticateUser, upload.single('image'), async (req, res) => {
         if (req.file) {
             s3Key = `tasks/${taskId}-${Date.now()}-${req.file.originalname}`;
             await s3.send(new PutObjectCommand({
-                Bucket: process.env.S3_ORIGINALS_BUCKET, Key: s3Key,
+                Bucket: getOriginalsBucket(), Key: s3Key,
                 Body: req.file.buffer, ContentType: req.file.mimetype
             }));
-            imageUrl = `https://${process.env.S3_ORIGINALS_BUCKET}.s3.amazonaws.com/${s3Key}`;
+            imageUrl = `https://${getOriginalsBucket()}.s3.amazonaws.com/${s3Key}`;
         }
 
         const { assigneeId } = req.body || {};
@@ -226,13 +228,28 @@ router.put('/:taskId/status', authenticateUser, async (req, res) => {
         const { task } = await getTaskAndAuthorize(taskId, req.user);
         if (!task) return res.status(404).json({ error: "Task not found" });
 
-        // Only managers or the assignee may update status
-        const isAssignee = task.assigneeId && task.assigneeId === req.user.username;
-        if (req.user.role !== 'Manager' && !isAssignee) return res.status(403).json({ error: "Only assignee or manager can update status" });
+        // Team access is already enforced by getTaskAndAuthorize.
+        // Employees can update status only within allowed transitions.
 
         // Validate status
         const allowed = ['To Do', 'In Progress', 'In Review', 'Done'];
         if (!allowed.includes(status)) return res.status(400).json({ error: 'Invalid status value' });
+
+        // Employee transition rule: To Do -> In Progress OR In Progress -> In Review
+        if (req.user.role !== 'Manager') {
+            const currentStatus = task.status;
+            const isAllowedEmployeeTransition =
+                (currentStatus === 'To Do' && status === 'In Progress') ||
+                (currentStatus === 'In Progress' && status === 'To Do') ||
+                (currentStatus === 'In Progress' && status === 'In Review');
+            if (!isAllowedEmployeeTransition) {
+                return res.status(403).json({
+                    error: 'Employees can only change status from To Do to In Progress, In Progress to To Do, or In Progress to In Review',
+                    currentStatus,
+                    requestedStatus: status
+                });
+            }
+        }
 
         await docClient.send(new UpdateCommand({
             TableName: "Tasks", Key: { taskId },
@@ -257,13 +274,18 @@ router.put('/:taskId/image', authenticateUser, upload.single('image'), async (re
         if (!task) return res.status(404).json({ error: "Task not found" });
         if (!authorized) return res.status(403).json({ error: "Access denied" });
 
+        const bucket = getOriginalsBucket();
+        if (!bucket) {
+            return res.status(500).json({ error: 'S3 originals bucket is not configured' });
+        }
+
         const s3Key = `tasks/${taskId}-${Date.now()}-${req.file.originalname}`;
         await s3.send(new PutObjectCommand({
-            Bucket: process.env.S3_ORIGINALS_BUCKET, Key: s3Key,
+            Bucket: bucket, Key: s3Key,
             Body: req.file.buffer, ContentType: req.file.mimetype
         }));
 
-        const imageUrl = `https://${process.env.S3_ORIGINALS_BUCKET}.s3.amazonaws.com/${s3Key}`;
+        const imageUrl = `https://${bucket}.s3.amazonaws.com/${s3Key}`;
 
         await docClient.send(new UpdateCommand({
             TableName: "Tasks", Key: { taskId },
@@ -272,7 +294,12 @@ router.put('/:taskId/image', authenticateUser, upload.single('image'), async (re
         }));
         res.json({ success: true, imageUrl });
     } catch (error) {
-        console.error(`PUT /api/tasks/${taskId}/image error:`, error);
+        console.error(`PUT /api/tasks/${taskId}/image error:`, {
+            name: error?.name,
+            message: error?.message,
+            code: error?.code,
+            requestId: error?.$metadata?.requestId,
+        });
         res.status(500).json({ error: "Failed to update image", details: error.message });
     }
 });
@@ -289,7 +316,7 @@ router.delete('/:taskId', authenticateUser, async (req, res) => {
 
         // Delete from S3 if it exists
         if (task && task.s3Key) {
-            await s3.send(new DeleteObjectCommand({ Bucket: process.env.S3_ORIGINALS_BUCKET, Key: task.s3Key }));
+            await s3.send(new DeleteObjectCommand({ Bucket: getOriginalsBucket(), Key: task.s3Key }));
         }
 
         // Delete from DB

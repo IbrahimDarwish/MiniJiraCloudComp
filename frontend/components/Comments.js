@@ -1,6 +1,6 @@
 'use client';
 import { useState, useEffect } from 'react';
-import { getComments, createComment, deleteComment } from '../utils/api';
+import { getComments, createComment, deleteComment, updateComment } from '../utils/api';
 import { getCurrentUser } from '../utils/auth';
 import toast from 'react-hot-toast';
 
@@ -9,18 +9,22 @@ export default function Comments({ taskId }) {
   const [newComment, setNewComment] = useState('');
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
+  const [editingCommentId, setEditingCommentId] = useState(null);
+  const [editingText, setEditingText] = useState('');
+  const [savingCommentId, setSavingCommentId] = useState(null);
   const currentUser = getCurrentUser();
 
-  useEffect(() => { fetchComments(); }, [taskId]);
-
-  const fetchComments = async () => {
-    setLoading(true);
-    try {
-      const res = await getComments(taskId);
-      setComments(res.data);
-    } catch (err) { toast.error('Failed to load comments'); }
-    finally { setLoading(false); }
-  };
+  useEffect(() => {
+    const fetchComments = async () => {
+      setLoading(true);
+      try {
+        const res = await getComments(taskId);
+        setComments(res.data);
+      } catch { toast.error('Failed to load comments'); }
+      finally { setLoading(false); }
+    };
+    fetchComments();
+  }, [taskId]);
 
   const handleSubmit = async () => {
     if (!newComment.trim()) return;
@@ -30,7 +34,7 @@ export default function Comments({ taskId }) {
       setComments([...comments, res.data]);
       setNewComment('');
       toast.success('Comment added');
-    } catch (err) { toast.error('Failed to add comment'); }
+    } catch { toast.error('Failed to add comment'); }
     finally { setSubmitting(false); }
   };
 
@@ -39,7 +43,29 @@ export default function Comments({ taskId }) {
       await deleteComment(commentId);
       setComments(comments.filter(c => c.commentId !== commentId));
       toast.success('Comment deleted');
-    } catch (err) { toast.error('Failed to delete comment'); }
+    } catch { toast.error('Failed to delete comment'); }
+  };
+
+  const startEdit = (comment) => {
+    setEditingCommentId(comment.commentId);
+    setEditingText(comment.text);
+  };
+
+  const cancelEdit = () => {
+    setEditingCommentId(null);
+    setEditingText('');
+  };
+
+  const handleUpdate = async (commentId) => {
+    if (!editingText.trim()) return;
+    setSavingCommentId(commentId);
+    try {
+      const res = await updateComment(commentId, editingText);
+      setComments(comments.map((comment) => (comment.commentId === commentId ? res.data : comment)));
+      toast.success('Comment updated');
+      cancelEdit();
+    } catch { toast.error('Failed to update comment'); }
+    finally { setSavingCommentId(null); }
   };
 
   return (
@@ -62,20 +88,58 @@ export default function Comments({ taskId }) {
                   <div className="flex justify-between items-start">
                     <div className="flex-1">
                       <p className="text-sm font-medium text-blue-600">{comment.author}</p>
-                      <p className="text-sm text-gray-700 mt-1">{comment.text}</p>
+                      {editingCommentId === comment.commentId ? (
+                        <textarea
+                          className="mt-1 w-full rounded-lg border border-gray-200 p-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-300"
+                          rows={3}
+                          value={editingText}
+                          onChange={(e) => setEditingText(e.target.value)}
+                        />
+                      ) : (
+                        <p className="text-sm text-gray-700 mt-1 whitespace-pre-wrap">{comment.text}</p>
+                      )}
                       <p className="text-xs text-gray-400 mt-1">
                         {new Date(comment.createdAt).toLocaleString()}
+                        {comment.editedAt ? ` • edited ${new Date(comment.editedAt).toLocaleString()}` : ''}
                       </p>
                     </div>
                     {(currentUser?.username === comment.author ||
                       currentUser?.role === 'Manager') && (
-                      <button
-                        onClick={() => handleDelete(comment.commentId)}
-                        className="text-red-400 hover:text-red-600 text-xs ml-2"
-                      >
-                        Delete
-                      </button>
-                    )}
+                        <div className="ml-2 flex flex-col items-end gap-1">
+                          {editingCommentId === comment.commentId ? (
+                            <>
+                              <button
+                                onClick={() => handleUpdate(comment.commentId)}
+                                disabled={savingCommentId === comment.commentId}
+                                className="text-blue-500 hover:text-blue-700 text-xs disabled:opacity-50"
+                              >
+                                {savingCommentId === comment.commentId ? 'Saving...' : 'Save'}
+                              </button>
+                              <button
+                                onClick={cancelEdit}
+                                className="text-gray-400 hover:text-gray-600 text-xs"
+                              >
+                                Cancel
+                              </button>
+                            </>
+                          ) : (
+                            <>
+                              <button
+                                onClick={() => startEdit(comment)}
+                                className="text-blue-400 hover:text-blue-600 text-xs"
+                              >
+                                Edit
+                              </button>
+                              <button
+                                onClick={() => handleDelete(comment.commentId)}
+                                className="text-red-400 hover:text-red-600 text-xs"
+                              >
+                                Delete
+                              </button>
+                            </>
+                          )}
+                        </div>
+                      )}
                   </div>
                 </div>
               ))}
