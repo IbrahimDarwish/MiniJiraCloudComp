@@ -205,10 +205,15 @@ router.post('/', authenticateUser, upload.single('image'), async (req, res) => {
                 UpdateExpression: "SET auditLog = list_append(if_not_exists(auditLog, :empty), :log)",
                 ExpressionAttributeValues: { ":log": logEntry, ":empty": [] }
             }));
-            await snsClient.send(new PublishCommand({
-                TopicArn: process.env.SNS_TASK_ASSIGNED_TOPIC_ARN,
-                Message: JSON.stringify({ taskId, assigneeId, teamId, action: "ASSIGNED" })
-            }));
+            try {
+                await snsClient.send(new PublishCommand({
+                    TopicArn: process.env.SNS_TASK_ASSIGNED_TOPIC_ARN,
+                    Message: JSON.stringify({ taskId, assigneeId, teamId, action: "ASSIGNED" }),
+                    Subject: 'Task Assigned'
+                }));
+            } catch (snsErr) {
+                console.warn('SNS publish skipped:', snsErr.message);
+            }
         }
 
         res.status(201).json(taskItem);
@@ -342,10 +347,15 @@ router.post('/:taskId/assign', authenticateUser, async (req, res) => {
             UpdateExpression: "SET assigneeId = :a, auditLog = list_append(if_not_exists(auditLog, :empty), :log)",
             ExpressionAttributeValues: { ":a": assigneeId, ":log": logEntry, ":empty": [] }
         }));
-        await snsClient.send(new PublishCommand({
-            TopicArn: process.env.SNS_TASK_ASSIGNED_TOPIC_ARN,
-            Message: JSON.stringify({ taskId, assigneeId, teamId, action: "ASSIGNED" })
-        }));
+        try {
+            await snsClient.send(new PublishCommand({
+                TopicArn: process.env.SNS_TASK_ASSIGNED_TOPIC_ARN,
+                Message: JSON.stringify({ taskId, assigneeId, teamId, action: "ASSIGNED" }),
+                Subject: 'Task Assigned'
+            }));
+        } catch (snsErr) {
+            console.warn('SNS publish skipped:', snsErr.message);
+        }
         res.json({ success: true, message: "Task assigned and SNS triggered" });
     } catch (error) {
         console.error(`POST /api/tasks/${taskId}/assign error:`, error);
