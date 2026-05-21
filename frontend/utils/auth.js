@@ -34,7 +34,8 @@ export const loginUser = async (email, password) => {
     // Read role and teamId from IdToken
     const payload = JSON.parse(atob(data.AuthenticationResult.IdToken.split('.')[1]));
     const user = {
-      username: payload['cognito:username'],
+      username: payload.email || payload['cognito:username'],
+      cognitoUsername: payload['cognito:username'],
       email: payload.email,
       role: payload['custom:role'] || 'Employee',
       teamId: payload['custom:teamId'] || null,

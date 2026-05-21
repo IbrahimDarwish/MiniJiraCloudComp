@@ -11,15 +11,24 @@ const TEAMS_TABLE = "Teams";
 // GET CURRENT USER PROFILE
 router.get('/me', authenticateUser, async (req, res) => {
     try {
-        const userResp = await docClient.send(new GetCommand({
-            TableName: USERS_TABLE,
-            Key: { userId: req.user.username }
-        }));
+        const lookupIds = [req.user.username, req.user.cognitoUsername].filter(Boolean);
+        let userResp = { Item: null };
+
+        for (const userId of lookupIds) {
+            userResp = await docClient.send(new GetCommand({
+                TableName: USERS_TABLE,
+                Key: { userId }
+            }));
+
+            if (userResp.Item) break;
+        }
 
         if (!userResp.Item) {
             // If user not in DB, return from token
             return res.json({
                 userId: req.user.username,
+                email: req.user.email,
+                cognitoUsername: req.user.cognitoUsername,
                 role: req.user.role,
                 teamId: req.user.teamId
             });

@@ -41,7 +41,11 @@ const requireManagerOrAdmin = (req, res, next) => {
 router.get('/', authenticateUser, async (req, res) => {
     try {
         const response = await docClient.send(new ScanCommand({ TableName: TABLE_NAME }));
-        res.json(response.Items);
+        const teams = Array.isArray(response.Items) ? response.Items : [];
+        if (teams.length === 0 && process.env.NODE_ENV !== 'production') {
+            return res.json(DEMO_TEAMS);
+        }
+        res.json(teams);
     } catch (error) {
         if (isCredentialsError(error)) {
             return res.json(DEMO_TEAMS);

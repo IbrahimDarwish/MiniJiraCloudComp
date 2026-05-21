@@ -26,7 +26,7 @@ export default function CreateTaskModal({ onClose, onCreated }) {
         const [teamsResult, usersResult] = await Promise.allSettled(requests);
 
         if (teamsResult.status === 'fulfilled') {
-          setTeams(teamsResult.value.data);
+          setTeams(Array.isArray(teamsResult.value.data) ? teamsResult.value.data : []);
         } else {
           toast.error('Failed to load form data');
           return;

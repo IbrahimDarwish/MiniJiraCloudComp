@@ -56,7 +56,7 @@ export default function BoardPage() {
   const fetchTeams = async () => {
     try {
       const res = await getTeams();
-      setTeams(res.data);
+      setTeams(Array.isArray(res.data) ? res.data : []);
     } catch { console.error('Failed to load teams'); }
   };
 

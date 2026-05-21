@@ -13,6 +13,10 @@ export default function Comments({ taskId }) {
   const [editingText, setEditingText] = useState('');
   const [savingCommentId, setSavingCommentId] = useState(null);
   const currentUser = getCurrentUser();
+  const canEditComment = (comment) => {
+    const identities = [currentUser?.username, currentUser?.email].filter(Boolean);
+    return currentUser?.role === 'Manager' || identities.includes(comment.author);
+  };
 
   useEffect(() => {
     const fetchComments = async () => {
@@ -103,43 +107,42 @@ export default function Comments({ taskId }) {
                         {comment.editedAt ? ` • edited ${new Date(comment.editedAt).toLocaleString()}` : ''}
                       </p>
                     </div>
-                    {(currentUser?.username === comment.author ||
-                      currentUser?.role === 'Manager') && (
-                        <div className="ml-2 flex flex-col items-end gap-1">
-                          {editingCommentId === comment.commentId ? (
-                            <>
-                              <button
-                                onClick={() => handleUpdate(comment.commentId)}
-                                disabled={savingCommentId === comment.commentId}
-                                className="text-blue-500 hover:text-blue-700 text-xs disabled:opacity-50"
-                              >
-                                {savingCommentId === comment.commentId ? 'Saving...' : 'Save'}
-                              </button>
-                              <button
-                                onClick={cancelEdit}
-                                className="text-gray-400 hover:text-gray-600 text-xs"
-                              >
-                                Cancel
-                              </button>
-                            </>
-                          ) : (
-                            <>
-                              <button
-                                onClick={() => startEdit(comment)}
-                                className="text-blue-400 hover:text-blue-600 text-xs"
-                              >
-                                Edit
-                              </button>
-                              <button
-                                onClick={() => handleDelete(comment.commentId)}
-                                className="text-red-400 hover:text-red-600 text-xs"
-                              >
-                                Delete
-                              </button>
-                            </>
-                          )}
-                        </div>
-                      )}
+                    {canEditComment(comment) && (
+                      <div className="ml-2 flex flex-col items-end gap-1">
+                        {editingCommentId === comment.commentId ? (
+                          <>
+                            <button
+                              onClick={() => handleUpdate(comment.commentId)}
+                              disabled={savingCommentId === comment.commentId}
+                              className="text-blue-500 hover:text-blue-700 text-xs disabled:opacity-50"
+                            >
+                              {savingCommentId === comment.commentId ? 'Saving...' : 'Save'}
+                            </button>
+                            <button
+                              onClick={cancelEdit}
+                              className="text-gray-400 hover:text-gray-600 text-xs"
+                            >
+                              Cancel
+                            </button>
+                          </>
+                        ) : (
+                          <>
+                            <button
+                              onClick={() => startEdit(comment)}
+                              className="text-blue-400 hover:text-blue-600 text-xs"
+                            >
+                              Edit
+                            </button>
+                            <button
+                              onClick={() => handleDelete(comment.commentId)}
+                              className="text-red-400 hover:text-red-600 text-xs"
+                            >
+                              Delete
+                            </button>
+                          </>
+                        )}
+                      </div>
+                    )}
                   </div>
                 </div>
               ))}

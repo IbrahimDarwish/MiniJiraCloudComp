@@ -29,11 +29,12 @@ const authenticateUser = async (req, res, next) => {
         if (!token) return res.status(401).json({ error: "No token provided" });
 
         const payload = await verifier.verify(token);
-        const username = payload.username || payload["cognito:username"];
+        const cognitoUsername = payload.username || payload["cognito:username"] || null;
+        const tokenEmail = payload.email || null;
 
         let role = payload["custom:role"] || "Employee";
         let teamId = payload["custom:teamId"] || null;
-        let resolvedEmail = null;
+        let resolvedEmail = tokenEmail;
 
         // Try to resolve email from Cognito using the access token (more robust mapping)
         if (token) {
@@ -50,7 +51,7 @@ const authenticateUser = async (req, res, next) => {
                             role = byEmail.Item.role || role;
                             teamId = byEmail.Item.teamId || teamId;
                             resolvedEmail = resolvedEmail || byEmail.Item.email || byEmail.Item.userId;
-                            console.warn('authenticateUser: mapped Cognito token to Users by email', { username, email: resolvedEmail, userId: byEmail.Item.userId, teamId: byEmail.Item.teamId });
+                            console.warn('authenticateUser: mapped Cognito token to Users by email', { cognitoUsername, email: resolvedEmail, userId: byEmail.Item.userId, teamId: byEmail.Item.teamId });
                         }
                     } catch (e) {
                         console.warn('authenticateUser: lookup by email failed', e.message);
@@ -61,29 +62,39 @@ const authenticateUser = async (req, res, next) => {
             }
         }
 
-        if ((!role || !teamId) && username) {
-            try {
-                // Primary lookup by userId
-                const userResp = await docClient.send(new GetCommand({
-                    TableName: "Users",
-                    Key: { userId: username }
-                }));
+        const identityCandidates = [resolvedEmail, cognitoUsername].filter(Boolean);
 
-                // If not found, attempt a broader scan matching common identity fields
-                let profile = userResp.Item;
-                if (!profile) {
+        if ((!role || !teamId) && identityCandidates.length > 0) {
+            try {
+                let profile = null;
+
+                for (const identity of identityCandidates) {
+                    if (profile) break;
+
                     try {
-                        const scanResp = await docClient.send(new ScanCommand({
-                            TableName: 'Users',
-                            FilterExpression: 'userId = :u OR email = :u OR cognitoId = :u OR #sub = :u',
-                            ExpressionAttributeNames: { '#sub': 'sub' },
-                            ExpressionAttributeValues: { ':u': username }
+                        const userResp = await docClient.send(new GetCommand({
+                            TableName: "Users",
+                            Key: { userId: identity }
                         }));
-                        profile = (scanResp.Items || [])[0];
-                        if (profile) console.warn('authenticateUser: located user profile via scan', { username, profileId: profile.userId });
-                    } catch (scanErr) {
-                        // scanning may fail if AWS creds are missing; ignore and fall back to token claims
-                        console.warn('authenticateUser: users scan failed', scanErr.message);
+                        profile = userResp.Item || null;
+                    } catch (getErr) {
+                        console.warn('authenticateUser: primary user lookup failed', { identity, err: getErr.message });
+                    }
+
+                    if (!profile) {
+                        try {
+                            const scanResp = await docClient.send(new ScanCommand({
+                                TableName: 'Users',
+                                FilterExpression: 'userId = :u OR email = :u OR cognitoId = :u OR #sub = :u',
+                                ExpressionAttributeNames: { '#sub': 'sub' },
+                                ExpressionAttributeValues: { ':u': identity }
+                            }));
+                            profile = (scanResp.Items || [])[0] || null;
+                            if (profile) console.warn('authenticateUser: located user profile via scan', { identity, profileId: profile.userId });
+                        } catch (scanErr) {
+                            // scanning may fail if AWS creds are missing; ignore and fall back to token claims
+                            console.warn('authenticateUser: users scan failed', scanErr.message);
+                        }
                     }
                 }
 
@@ -100,9 +111,9 @@ const authenticateUser = async (req, res, next) => {
                             teamId = await findTeamIdForUser(resolvedEmail);
                             if (teamId) console.warn('authenticateUser: inferred teamId from Teams.members using email', { resolvedEmail, teamId });
                         }
-                        if (!teamId) {
-                            teamId = await findTeamIdForUser(username);
-                            if (teamId) console.warn('authenticateUser: inferred teamId from Teams.members using username', { username, teamId });
+                        if (!teamId && cognitoUsername) {
+                            teamId = await findTeamIdForUser(cognitoUsername);
+                            if (teamId) console.warn('authenticateUser: inferred teamId from Teams.members using username', { cognitoUsername, teamId });
                         }
                     } catch (teamLookupErr) {
                         console.warn('authenticateUser: findTeamIdForUser failed', teamLookupErr.message);
@@ -115,7 +126,9 @@ const authenticateUser = async (req, res, next) => {
         }
 
         req.user = {
-            username,
+            username: resolvedEmail || cognitoUsername,
+            email: resolvedEmail || tokenEmail || null,
+            cognitoUsername,
             role,
             teamId
         };

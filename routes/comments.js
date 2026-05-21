@@ -10,6 +10,11 @@ const docClient = DynamoDBDocumentClient.from(new DynamoDBClient({ region: proce
 const TABLE_NAME = "Comments";
 const TASKS_TABLE = "Tasks";
 
+const canActOnComment = (reqUser, comment) => {
+    const identities = [reqUser?.username, reqUser?.email, reqUser?.cognitoUsername].filter(Boolean);
+    return identities.includes(comment.author);
+};
+
 // GET COMMENTS FOR A SPECIFIC TASK
 router.get('/:taskId', authenticateUser, async (req, res) => {
     const { taskId } = req.params;
@@ -91,7 +96,7 @@ router.put('/:commentId', authenticateUser, async (req, res) => {
 
         if (!comment) return res.status(404).json({ error: "Comment not found" });
 
-        if (req.user.username !== comment.author && req.user.role !== 'Manager') {
+        if (!canActOnComment(req.user, comment) && req.user.role !== 'Manager') {
             return res.status(403).json({ error: "You can only edit your own comments" });
         }
 
@@ -133,7 +138,7 @@ router.delete('/:commentId', authenticateUser, async (req, res) => {
         if (!comment) return res.status(404).json({ error: "Comment not found" });
 
         // Only author or Manager can delete
-        if (req.user.username !== comment.author && req.user.role !== 'Manager') {
+        if (!canActOnComment(req.user, comment) && req.user.role !== 'Manager') {
             return res.status(403).json({ error: "You can only delete your own comments" });
         }
 
