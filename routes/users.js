@@ -11,15 +11,24 @@ const TEAMS_TABLE = "Teams";
 // GET CURRENT USER PROFILE
 router.get('/me', authenticateUser, async (req, res) => {
     try {
-        const userResp = await docClient.send(new GetCommand({
-            TableName: USERS_TABLE,
-            Key: { userId: req.user.username }
-        }));
+        const lookupIds = [req.user.username, req.user.cognitoUsername].filter(Boolean);
+        let userResp = { Item: null };
+
+        for (const userId of lookupIds) {
+            userResp = await docClient.send(new GetCommand({
+                TableName: USERS_TABLE,
+                Key: { userId }
+            }));
+
+            if (userResp.Item) break;
+        }
 
         if (!userResp.Item) {
             // If user not in DB, return from token
             return res.json({
                 userId: req.user.username,
+                email: req.user.email,
+                cognitoUsername: req.user.cognitoUsername,
                 role: req.user.role,
                 teamId: req.user.teamId
             });
@@ -32,34 +41,6 @@ router.get('/me', authenticateUser, async (req, res) => {
 });
 
 // GET SINGLE USER BY ID
-router.get('/:userId', authenticateUser, async (req, res) => {
-    try {
-        const userResp = await docClient.send(new GetCommand({
-            TableName: USERS_TABLE,
-            Key: { userId: req.params.userId }
-        }));
-
-        if (!userResp.Item) return res.status(404).json({ error: "User not found" });
-        res.json(userResp.Item);
-    } catch (error) {
-        res.status(500).json({ error: "Failed to fetch user" });
-    }
-});
-
-// LIST ALL USERS (Manager only)
-router.get('/', authenticateUser, async (req, res) => {
-    if (req.user.role !== 'Manager' && req.user.role !== 'Admin') {
-        return res.status(403).json({ error: "Manager or Admin access required" });
-    }
-
-    try {
-        const response = await docClient.send(new ScanCommand({ TableName: USERS_TABLE }));
-        res.json(response.Items);
-    } catch (error) {
-        res.status(500).json({ error: "Failed to fetch users" });
-    }
-});
-
 // LIST USERS IN A TEAM
 router.get('/team/:teamId', authenticateUser, async (req, res) => {
     const { teamId } = req.params;
@@ -91,6 +72,35 @@ router.get('/team/:teamId', authenticateUser, async (req, res) => {
         res.json(members);
     } catch (error) {
         res.status(500).json({ error: "Failed to fetch team members" });
+    }
+});
+
+// LIST ALL USERS (Manager only)
+router.get('/', authenticateUser, async (req, res) => {
+    if (req.user.role !== 'Manager' && req.user.role !== 'Admin') {
+        return res.status(403).json({ error: "Manager or Admin access required" });
+    }
+
+    try {
+        const response = await docClient.send(new ScanCommand({ TableName: USERS_TABLE }));
+        res.json(response.Items);
+    } catch (error) {
+        res.status(500).json({ error: "Failed to fetch users" });
+    }
+});
+
+// GET SINGLE USER BY ID
+router.get('/:userId', authenticateUser, async (req, res) => {
+    try {
+        const userResp = await docClient.send(new GetCommand({
+            TableName: USERS_TABLE,
+            Key: { userId: req.params.userId }
+        }));
+
+        if (!userResp.Item) return res.status(404).json({ error: "User not found" });
+        res.json(userResp.Item);
+    } catch (error) {
+        res.status(500).json({ error: "Failed to fetch user" });
     }
 });
 

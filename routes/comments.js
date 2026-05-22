@@ -2,13 +2,18 @@
 const express = require('express');
 const { v4: uuidv4 } = require('uuid');
 const { DynamoDBClient } = require("@aws-sdk/client-dynamodb");
-const { DynamoDBDocumentClient, PutCommand, QueryCommand, GetCommand, DeleteCommand, ScanCommand } = require("@aws-sdk/lib-dynamodb");
+const { DynamoDBDocumentClient, PutCommand, QueryCommand, GetCommand, DeleteCommand, ScanCommand, UpdateCommand } = require("@aws-sdk/lib-dynamodb");
 const { authenticateUser } = require('../middleware/auth');
 
 const router = express.Router();
 const docClient = DynamoDBDocumentClient.from(new DynamoDBClient({ region: process.env.AWS_REGION }));
 const TABLE_NAME = "Comments";
 const TASKS_TABLE = "Tasks";
+
+const canActOnComment = (reqUser, comment) => {
+    const identities = [reqUser?.username, reqUser?.email, reqUser?.cognitoUsername].filter(Boolean);
+    return identities.includes(comment.author);
+};
 
 // GET COMMENTS FOR A SPECIFIC TASK
 router.get('/:taskId', authenticateUser, async (req, res) => {
@@ -21,15 +26,28 @@ router.get('/:taskId', authenticateUser, async (req, res) => {
         if (!task) return res.status(404).json({ error: "Task not found" });
         if (req.user.role !== 'Manager' && req.user.teamId !== task.teamId) return res.status(403).json({ error: "Access denied" });
 
-        const response = await docClient.send(new QueryCommand({
-            TableName: TABLE_NAME,
-            IndexName: "taskId-index", // Ensure this GSI exists in AWS
-            KeyConditionExpression: "taskId = :tid",
-            ExpressionAttributeValues: { ":tid": taskId }
-        }));
+        let response;
+        try {
+            response = await docClient.send(new QueryCommand({
+                TableName: TABLE_NAME,
+                IndexName: "taskId-index", // Ensure this GSI exists in AWS
+                KeyConditionExpression: "taskId = :tid",
+                ExpressionAttributeValues: { ":tid": taskId }
+            }));
+        } catch (queryErr) {
+            console.warn('GET /api/comments query failed, falling back to scan', { taskId, err: queryErr.message });
+            try {
+                const scanResp = await docClient.send(new ScanCommand({ TableName: TABLE_NAME }));
+                const items = (scanResp.Items || []).filter(i => i.taskId === taskId);
+                response = { Items: items };
+            } catch (scanErr) {
+                console.error('GET /api/comments scan fallback failed', scanErr);
+                return res.status(500).json({ error: "Failed to fetch comments" });
+            }
+        }
 
         // Sort comments by timestamp
-        const sortedComments = response.Items.sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt));
+        const sortedComments = (response.Items || []).sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt));
         res.json(sortedComments);
     } catch (error) {
         res.status(500).json({ error: "Failed to fetch comments" });
@@ -63,6 +81,51 @@ router.post('/', authenticateUser, async (req, res) => {
     }
 });
 
+// UPDATE A COMMENT
+router.put('/:commentId', authenticateUser, async (req, res) => {
+    const { commentId } = req.params;
+    const { text } = req.body;
+
+    if (!text || !text.trim()) {
+        return res.status(400).json({ error: "text is required" });
+    }
+
+    try {
+        const getResp = await docClient.send(new GetCommand({ TableName: TABLE_NAME, Key: { commentId } }));
+        const comment = getResp.Item;
+
+        if (!comment) return res.status(404).json({ error: "Comment not found" });
+
+        if (!canActOnComment(req.user, comment) && req.user.role !== 'Manager') {
+            return res.status(403).json({ error: "You can only edit your own comments" });
+        }
+
+        const taskResp = await docClient.send(new GetCommand({ TableName: TASKS_TABLE, Key: { taskId: comment.taskId } }));
+        const task = taskResp.Item;
+        if (!task) return res.status(404).json({ error: "Task not found" });
+        if (req.user.role !== 'Manager' && req.user.teamId !== task.teamId) return res.status(403).json({ error: "Access denied" });
+
+        await docClient.send(new UpdateCommand({
+            TableName: TABLE_NAME,
+            Key: { commentId },
+            UpdateExpression: "SET #text = :text, editedAt = :editedAt",
+            ExpressionAttributeNames: { "#text": "text" },
+            ExpressionAttributeValues: {
+                ":text": text.trim(),
+                ":editedAt": new Date().toISOString()
+            }
+        }));
+
+        res.json({
+            ...comment,
+            text: text.trim(),
+            editedAt: new Date().toISOString()
+        });
+    } catch (error) {
+        res.status(500).json({ error: "Failed to update comment" });
+    }
+});
+
 // DELETE A COMMENT
 router.delete('/:commentId', authenticateUser, async (req, res) => {
     const { commentId } = req.params;
@@ -75,7 +138,7 @@ router.delete('/:commentId', authenticateUser, async (req, res) => {
         if (!comment) return res.status(404).json({ error: "Comment not found" });
 
         // Only author or Manager can delete
-        if (req.user.username !== comment.author && req.user.role !== 'Manager') {
+        if (!canActOnComment(req.user, comment) && req.user.role !== 'Manager') {
             return res.status(403).json({ error: "You can only delete your own comments" });
         }
 
