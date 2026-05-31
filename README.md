@@ -16,12 +16,11 @@ https://github.com/IbrahimDarwish/MiniJiraCloudComp
 - Employee (Backend team): omar@demo.com /   Admin1234!
 
 ## Architecture
-  https://drive.google.com/file/d/15xANhD25bpZ9EQlSC9hP4Rum0910ycUG/view?usp=drive_link
-
+ https://drive.google.com/drive/folders/14xdhOVWMQlBm1vUnVUrHhkjzdNtDyA_p?usp=sharing
 
 ## Demo Video
  https://drive.google.com/file/d/15xANhD25bpZ9EQlSC9hP4Rum0910ycUG/view?usp=drive_link
- 
+ https://drive.google.com/drive/folders/14xdhOVWMQlBm1vUnVUrHhkjzdNtDyA_p?usp=sharing
 
 
 
