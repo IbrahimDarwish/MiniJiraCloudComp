@@ -5,21 +5,25 @@ A lightweight team task-management web application built on AWS.
 ## Live Application
 
 **CloudFront URL:** https://d27xccp64ve5xx.cloudfront.net
-
+ 
 ## GitHub Repository
 
 https://github.com/IbrahimDarwish/MiniJiraCloudComp
 
 ## Demo Accounts
-- Manager: ali@demo.com / Demo@1234
-- Employee (Frontend team): sara@demo.com / Demo@1234
-- Employee (Backend team): omar@demo.com / Demo@1234
+- Manager: ali@demo.com / Admin1234!
+- Employee (Frontend team): sara@demo.com /  Admin1234!
+- Employee (Backend team): omar@demo.com /   Admin1234!
 
 ## Architecture
-[Add architecture diagram image here]
+  https://drive.google.com/file/d/15xANhD25bpZ9EQlSC9hP4Rum0910ycUG/view?usp=drive_link
+
 
 ## Demo Video
-[Add demo video link here]
+ https://drive.google.com/file/d/15xANhD25bpZ9EQlSC9hP4Rum0910ycUG/view?usp=drive_link
+ 
+
+
 
 ## Tech Stack
 - Frontend: Next.js + Tailwind CSS
